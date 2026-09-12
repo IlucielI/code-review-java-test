@@ -61,4 +61,19 @@ public class SafeGuardController {
         Process p = pb.start();
         return List.of("status", String.valueOf(p.waitFor()));
     }
+
+    public void safeCookieConfig(jakarta.servlet.http.HttpServletResponse response, String token) {
+        // Guard: Cookie with HttpOnly and Secure enabled
+        jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie("auth_session", token);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        response.addCookie(cookie);
+    }
+
+    public org.w3c.dom.Document safeXmlParse(String xml) throws Exception {
+        // Guard: DocumentBuilderFactory with FEATURE_SECURE_PROCESSING - NOT XXE
+        javax.xml.parsers.DocumentBuilderFactory dbf = javax.xml.parsers.DocumentBuilderFactory.newInstance();
+        dbf.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        return dbf.newDocumentBuilder().parse(new org.xml.sax.InputSource(new java.io.StringReader(xml)));
+    }
 }
