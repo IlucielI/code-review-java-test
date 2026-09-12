@@ -30,6 +30,10 @@ Benchmark test suite for automated code review engines on Java / Spring Boot ent
 | `AuthService.java` | Hardcoded JWT Secret Key & Plaintext Credential Logging | Credential Exposure | CWE-798 / CWE-532 | High | **BLOCKING** |
 | `RedirectController.java` | Open Redirect via unvalidated destination `RedirectView` | Redirection | CWE-601 | Medium | **BLOCKING** |
 | `UserController.java` | IDOR on user account deletion without ownership check | Broken Access Control | CWE-639 | High | **BLOCKING** |
+| `CorsConfig.java` | Wildcard `*` origin with `allowCredentials=true` | CORS Misconfiguration | CWE-942 | High | **BLOCKING** |
+| `XmlService.java` | XML parser without secure processing disabled (XXE) | Injection / XXE | CWE-611 | High | **BLOCKING** |
+| `CookieController.java` | Cookies explicitly configured with `HttpOnly=false` and `Secure=false` | Insecure Cookie | CWE-614 / CWE-1004 | Medium | **NON-BLOCKING** |
+| `LoginController.java` | Authentication login route missing rate limiting or throttling | Missing Rate Limiting | CWE-307 | Medium | **NON-BLOCKING** |
 
 ### ⚡ Performance & Resource Leaks
 
@@ -44,7 +48,7 @@ Benchmark test suite for automated code review engines on Java / Spring Boot ent
 
 | File | Safe Pattern Implemented | Expected Reviewer Result |
 | :--- | :--- | :---: |
-| `SafeGuardController.java` | Parameterized `PreparedStatement` (`?`), strict domain whitelist for redirects, `ProcessBuilder` array args, try-with-resources auto-close | **0 False Positives** (Clean) |
+| `SafeGuardController.java` | Parameterized `PreparedStatement` (`?`), strict domain whitelist for redirects, `ProcessBuilder` array args, try-with-resources auto-close, secure XML processing (`FEATURE_SECURE_PROCESSING`), hardened `HttpOnly`/`Secure` cookies | **0 False Positives** (Clean) |
 
 ---
 
@@ -67,6 +71,6 @@ curl -X POST http://localhost:8081/api/v1/review/trigger \
 
 ## 📊 Benchmark Validation Results
 
-- **Detection Rate:** 10 / 10 (100%)
+- **Detection Rate:** 15 / 15 (100%)
 - **False Positive Rate:** 0 / 1 (`SafeGuardController.java` completely passed)
 - **False Negative Rate:** 0%
